@@ -1,4 +1,3 @@
-import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { inject, injectable } from 'tsyringe';
 
@@ -51,6 +50,8 @@ class AuthenticateUserService {
             subject: user.id,
             expiresIn,
         });
+
+        delete user.password;
 
         return {
             user,
