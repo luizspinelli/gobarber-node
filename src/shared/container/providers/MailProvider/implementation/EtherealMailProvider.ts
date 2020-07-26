@@ -45,10 +45,7 @@ class EtherealMailProvider implements IMailProvider {
                 address: to.mail,
             },
             subject,
-            html: await this.mailTemplateProvider.parse({
-                template: templateData.template,
-                variables: templateData.variables,
-            }),
+            html: await this.mailTemplateProvider.parse(templateData),
         });
 
         console.log('Message sent: %s', message.messageId);
