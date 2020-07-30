@@ -60,8 +60,6 @@ class ListProviderDayAvailabilityService {
             };
         });
 
-        console.log(availability);
-
         return availability;
     }
 }

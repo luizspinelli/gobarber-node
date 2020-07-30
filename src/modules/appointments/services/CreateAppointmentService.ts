@@ -1,4 +1,4 @@
-import { startOfHour } from 'date-fns';
+import { startOfHour, isBefore, getHours } from 'date-fns';
 import { inject, injectable } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
@@ -8,6 +8,7 @@ import IAppointmentsRepository from '@modules/appointments/repositories/IAppoint
 
 interface IRequest {
     provider_id: string;
+    user_id: string;
     date: Date;
 }
 
@@ -20,6 +21,7 @@ class CreateAppointmentService {
 
     public async execute({
         provider_id,
+        user_id,
         date,
     }: IRequest): Promise<Appointment> {
         const appointmentDate = startOfHour(date);
@@ -32,8 +34,27 @@ class CreateAppointmentService {
             throw new AppError('This appoint is already booked');
         }
 
+        if (isBefore(appointmentDate, Date.now())) {
+            throw new AppError(
+                'It is not possible to create an appointment in a past date',
+            );
+        }
+
+        if (provider_id === user_id) {
+            throw new AppError(
+                'It is not allowed to create an appointment when the customer and the provider are the same user',
+            );
+        }
+
+        if (getHours(appointmentDate) < 8 || getHours(appointmentDate) > 17) {
+            throw new AppError(
+                'It is not possible to create an appointment out work hours',
+            );
+        }
+
         const appointment = await this.appointmentsRepository.create({
             provider_id,
+            user_id,
             date: appointmentDate,
         });
 
