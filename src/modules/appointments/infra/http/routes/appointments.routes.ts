@@ -4,11 +4,16 @@ import ensureAuthenticated from '@modules/users/infra/http/middlewares/ensureAut
 
 import AppointmentsController from '@modules/appointments/infra/http/controllers/AppointmentController';
 
+import ProviderAppointmentsController from '@modules/appointments/infra/http/controllers/ProviderAppointmentsController';
+
 const appointmentsRouter = Router();
 const appointmentController = new AppointmentsController();
+const providerAppointmentsController = new ProviderAppointmentsController();
 
 appointmentsRouter.use(ensureAuthenticated);
 
 appointmentsRouter.post('/', appointmentController.create);
+
+appointmentsRouter.get('/me', providerAppointmentsController.index);
 
 export default appointmentsRouter;
