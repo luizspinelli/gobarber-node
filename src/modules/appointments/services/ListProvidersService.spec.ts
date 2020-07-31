@@ -10,39 +10,39 @@ let createUserService: CreateUserService;
 let listProviders: ListProvidersService;
 
 describe('ListProviders', () => {
-    beforeEach(() => {
-        fakeUsersRepository = new FakeUsersRepository();
-        fakeHashProvider = new FakeHashProvider();
+  beforeEach(() => {
+    fakeUsersRepository = new FakeUsersRepository();
+    fakeHashProvider = new FakeHashProvider();
 
-        createUserService = new CreateUserService(
-            fakeUsersRepository,
-            fakeHashProvider,
-        );
+    createUserService = new CreateUserService(
+      fakeUsersRepository,
+      fakeHashProvider,
+    );
 
-        listProviders = new ListProvidersService(fakeUsersRepository);
+    listProviders = new ListProvidersService(fakeUsersRepository);
+  });
+
+  it('should be able to list all providers', async () => {
+    const user1 = await createUserService.execute({
+      name: 'john doe',
+      email: 'johndoe@gmail.com',
+      password: '123456',
     });
 
-    it('should be able to list all providers', async () => {
-        const user1 = await createUserService.execute({
-            name: 'john doe',
-            email: 'johndoe@gmail.com',
-            password: '123456',
-        });
-
-        const user2 = await createUserService.execute({
-            name: 'john doe2',
-            email: 'johndoe2@gmail.com',
-            password: '123456',
-        });
-
-        const user = await createUserService.execute({
-            name: 'john doe3',
-            email: 'johndoe3@gmail.com',
-            password: '123456',
-        });
-
-        const providers = await listProviders.execute({ user_id: user.id });
-
-        expect(providers).toEqual([user1, user2]);
+    const user2 = await createUserService.execute({
+      name: 'john doe2',
+      email: 'johndoe2@gmail.com',
+      password: '123456',
     });
+
+    const user = await createUserService.execute({
+      name: 'john doe3',
+      email: 'johndoe3@gmail.com',
+      password: '123456',
+    });
+
+    const providers = await listProviders.execute({ user_id: user.id });
+
+    expect(providers).toEqual([user1, user2]);
+  });
 });
