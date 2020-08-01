@@ -11,14 +11,20 @@ class RedisCacheProvider implements ICacheProvider {
     this.cliente = new Redis(cacheConfig.config.redis);
   }
 
-  public async save(key: string, value: string): Promise<void> {
+  public async save(key: string, value: any): Promise<void> {
     await this.cliente.set(key, JSON.stringify(value));
   }
 
-  public async recover(key: string): Promise<string | null> {
+  public async recover<T>(key: string): Promise<T | null> {
     const data = await this.cliente.get(key);
 
-    return JSON.parse(data || '');
+    if (!data) {
+      return null;
+    }
+
+    const parsedData = JSON.parse(data) as T;
+
+    return parsedData;
   }
 
   public async invalidate(key: string): Promise<void> {}
