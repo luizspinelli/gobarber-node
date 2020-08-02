@@ -33,8 +33,6 @@ class ListProviderAppointmentsService {
       cacheKey,
     );
 
-    console.log(cacheKey, 'olá');
-
     if (!appointments) {
       appointments = await this.appointmentsRepository.findaAllInDayFromProvider(
         {
@@ -44,8 +42,6 @@ class ListProviderAppointmentsService {
           year,
         },
       );
-
-      console.log('Buscou no banco');
 
       await this.cacheProvider.save(cacheKey, appointments);
     }

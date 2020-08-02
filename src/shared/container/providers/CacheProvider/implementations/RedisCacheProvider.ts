@@ -1,7 +1,6 @@
 import Redis, { Redis as RedisClient } from 'ioredis';
 
 import cacheConfig from '@config/cache';
-import AppError from '@shared/errors/AppError';
 import ICacheProvider from '../models/ICacheProvider';
 
 class RedisCacheProvider implements ICacheProvider {
@@ -29,7 +28,6 @@ class RedisCacheProvider implements ICacheProvider {
 
   public async invalidate(key: string): Promise<void> {
     await this.client.del(key);
-    console.log(key);
   }
 
   public async invalidatePrefix(prefix: string): Promise<void> {
