@@ -5,18 +5,18 @@ import AppError from '@shared/errors/AppError';
 import ICacheProvider from '../models/ICacheProvider';
 
 class RedisCacheProvider implements ICacheProvider {
-  private cliente: RedisClient;
+  private client: RedisClient;
 
   constructor() {
-    this.cliente = new Redis(cacheConfig.config.redis);
+    this.client = new Redis(cacheConfig.config.redis);
   }
 
   public async save(key: string, value: any): Promise<void> {
-    await this.cliente.set(key, JSON.stringify(value));
+    await this.client.set(key, JSON.stringify(value));
   }
 
   public async recover<T>(key: string): Promise<T | null> {
-    const data = await this.cliente.get(key);
+    const data = await this.client.get(key);
 
     if (!data) {
       return null;
@@ -27,7 +27,22 @@ class RedisCacheProvider implements ICacheProvider {
     return parsedData;
   }
 
-  public async invalidate(key: string): Promise<void> {}
+  public async invalidate(key: string): Promise<void> {
+    await this.client.del(key);
+    console.log(key);
+  }
+
+  public async invalidatePrefix(prefix: string): Promise<void> {
+    const keys = await this.client.keys(`${prefix}:*`);
+
+    const pipeline = this.client.pipeline();
+
+    keys.forEach(key => {
+      pipeline.del(key);
+    });
+
+    await pipeline.exec();
+  }
 }
 
 export default RedisCacheProvider;

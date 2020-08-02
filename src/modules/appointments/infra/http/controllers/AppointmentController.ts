@@ -4,23 +4,18 @@ import CreateAppointmentService from '@modules/appointments/services/CreateAppoi
 import { parseISO } from 'date-fns';
 
 export default class AppointmentController {
-    public async create(
-        request: Request,
-        response: Response,
-    ): Promise<Response> {
-        const user_id = request.user.id;
-        const { provider_id, date } = request.body;
+  public async create(request: Request, response: Response): Promise<Response> {
+    const user_id = request.user.id;
+    const { provider_id, date } = request.body;
 
-        const parsedDate = parseISO(date);
+    const createAppointment = container.resolve(CreateAppointmentService);
 
-        const createAppointment = container.resolve(CreateAppointmentService);
+    const appointment = await createAppointment.execute({
+      provider_id,
+      user_id,
+      date,
+    });
 
-        const appointment = await createAppointment.execute({
-            provider_id,
-            user_id,
-            date: parsedDate,
-        });
-
-        return response.json(appointment);
-    }
+    return response.json(appointment);
+  }
 }
