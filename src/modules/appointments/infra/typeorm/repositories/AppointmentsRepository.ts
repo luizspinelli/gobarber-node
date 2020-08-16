@@ -6,7 +6,6 @@ import ICreateAppointmentsDTO from '@modules/appointments/dtos/ICreateAppointmen
 import Appointment from '@modules/appointments/infra/typeorm/entities/Appointment';
 import IFindAllInMonthFromProviderDTO from '@modules/appointments/dtos/IFindAllInMonthFromProviderDTO';
 import IFindAllInDayFromProviderDTO from '@modules/appointments/dtos/IFindAllInDayFromProviderDTO';
-import { String } from 'aws-sdk/clients/acm';
 
 class AppointmentsRepository implements IAppointmentsRepository {
   private ormRepository: Repository<Appointment>;
@@ -47,7 +46,7 @@ class AppointmentsRepository implements IAppointmentsRepository {
     month,
     year,
   }: IFindAllInMonthFromProviderDTO): Promise<Appointment[]> {
-    const parsedMonth = String(month).padStart(2, '0');
+    const parsedMonth = month.toString().padStart(2, '0');
 
     const appointments = await this.ormRepository.find({
       where: {
@@ -68,12 +67,11 @@ class AppointmentsRepository implements IAppointmentsRepository {
     year,
     day,
   }: IFindAllInDayFromProviderDTO): Promise<Appointment[]> {
-    const parsedDay = String(day).padStart(2, '0');
-    const parsedMonth = String(month).padStart(2, '0');
+    const parsedDay = day.toString().padStart(2, '0');
+    const parsedMonth = month.toString().padStart(2, '0');
 
     const appointments = await this.ormRepository.find({
       where: {
-        provider_id,
         date: Raw(
           dataFieldName =>
             `to_char(${dataFieldName}, 'DD-MM-YYYY') = '${parsedDay}-${parsedMonth}-${year}'`,
